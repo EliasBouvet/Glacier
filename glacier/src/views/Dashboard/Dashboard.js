@@ -86,7 +86,7 @@ export default function Dashboard() {
               </CardIcon>
               <p className={classes.cardCategory}>Vannbestand</p>
               <h3 className={classes.cardTitle}>
-                35 <small>m</small>
+                37 <small>m</small>
               </h3>
             </CardHeader>
             <CardFooter stats>

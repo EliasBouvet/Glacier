@@ -3,6 +3,7 @@ import Calendar from "views/Calendar/Calendar.js";
 import Charts from "views/Charts/Charts.js";
 import Dashboard from "views/Dashboard/Dashboard.js";
 import Historie from "views/Dashboard/Historie.js";
+import RealTime from "views/Dashboard/RealTime.js";
 import ErrorPage from "views/Pages/ErrorPage.js";
 import ExtendedForms from "views/Forms/ExtendedForms.js";
 import ExtendedTables from "views/Tables/ExtendedTables.js";
@@ -63,7 +64,7 @@ var dashRoutes = [
     name: "Real Time",
     rtlName: "لوحة القيادة",
     icon: Apps,
-    component: Dashboard,
+    component: RealTime,
     layout: "/admin",
   },
   {

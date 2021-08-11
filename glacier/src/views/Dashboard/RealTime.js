@@ -24,6 +24,7 @@ import Edit from "@material-ui/icons/Edit";
 import Place from "@material-ui/icons/Place";
 import ArtTrack from "@material-ui/icons/ArtTrack";
 import Language from "@material-ui/icons/Language";
+import AdjustIcon from '@material-ui/icons/Adjust';
 
 // core components
 import GridContainer from "components/Grid/GridContainer.js";
@@ -48,6 +49,7 @@ import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle
 import priceImage1 from "assets/img/card-2.jpeg";
 import priceImage2 from "assets/img/card-3.jpeg";
 import priceImage3 from "assets/img/card-1.jpeg";
+import { card } from "assets/jss/material-dashboard-pro-react";
 
 const us_flag = require("assets/img/flags/US.png").default;
 const de_flag = require("assets/img/flags/DE.png").default;
@@ -74,6 +76,27 @@ const useStyles = makeStyles(styles);
 
 export default function Dashboard() {
   const classes = useStyles();
+  let Data = [
+    [
+      "Generator",
+      "Status",
+      "Oppetid [timer]",
+      "Merknad",
+    ],
+    
+    
+
+  ]
+
+  for(let i = 1; i < 15; i++){
+    Data.push([
+      i.toString(),
+      "På",
+      "220",
+      "N/A",
+    ])
+  }
+
   return (
     <div>
       <GridContainer>
@@ -152,6 +175,28 @@ export default function Dashboard() {
           </Card>
         </GridItem>
       </GridContainer>
+
+    <Card>
+      <CardHeader>
+      <CardIcon color="info" icon>
+                <AdjustIcon />
+              </CardIcon>
+              <h4 className={classes.cardIconTitle}>
+                Generatorstatus
+              </h4>
+      </CardHeader>
+    <CardBody>
+      <GridContainer color = "red">
+      <GridItem xs={12} sm={12} md={5}>
+        <Table
+                    tableData={Data}
+                  />
+        </GridItem>
+      </GridContainer>
+      </CardBody>             
+      </Card>
+
+
       <GridContainer>
         <GridItem xs={12}>
           <Card>
