@@ -50,6 +50,8 @@ import priceImage1 from "assets/img/card-2.jpeg";
 import priceImage2 from "assets/img/card-3.jpeg";
 import priceImage3 from "assets/img/card-1.jpeg";
 
+
+
 const us_flag = require("assets/img/flags/US.png").default;
 const de_flag = require("assets/img/flags/DE.png").default;
 const au_flag = require("assets/img/flags/AU.png").default;
@@ -86,7 +88,7 @@ export default function Dashboard() {
               </CardIcon>
               <p className={classes.cardCategory}>Vannbestand</p>
               <h3 className={classes.cardTitle}>
-                35 <small>m</small>
+                40 <small>m</small>
               </h3>
             </CardHeader>
             <CardFooter stats>

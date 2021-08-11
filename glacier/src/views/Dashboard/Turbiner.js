@@ -17,6 +17,8 @@ import CardIcon from "components/Card/CardIcon.js";
 import CardHeader from "components/Card/CardHeader.js";
 import ReactTable from "components/ReactTable/ReactTable.js";
 
+import BuildIcon from '@material-ui/icons/Build';
+
 import { dataTable } from "variables/general.js";
 
 import { cardTitle } from "assets/jss/material-dashboard-pro-react.js";
@@ -126,7 +128,7 @@ export default function ReactTables() {
         <Card>
           <CardHeader color="primary" icon>
             <CardIcon color="primary">
-              <Assignment />
+              <BuildIcon />
             </CardIcon>
             <h4 className={classes.cardIconTitle}>Turbin</h4>
           </CardHeader>
@@ -134,7 +136,7 @@ export default function ReactTables() {
             <ReactTable
               columns={[
                 {
-                  Header: "Turbi ",
+                  Header: "Turbin",
                   accessor: "name",
                 },
                 {
