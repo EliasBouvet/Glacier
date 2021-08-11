@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 // react plugin for creating charts
 import ChartistGraph from "react-chartist";
 // react plugin for creating vector maps
@@ -74,7 +74,54 @@ var mapData = {
 const useStyles = makeStyles(styles);
 
 export default function Dashboard() {
+  const [waterLevel, setWaterLevel] = useState(0)
+  const [powerPrice, setPowerPrice] = useState(0)
+  const [waterInflux, setWaterInflux] = useState(0)
+  const [moneyEarned, setMoneyEarned] = useState(0)
   const classes = useStyles();
+  const headers = {
+    "GroupId": "Gruppe 16",
+    "GroupKey": "iIw0LHgoTE6K/blLE5fv3g=="
+  }
+
+  function getGeneratorState() {
+    fetch("https://innafjord.azurewebsites.net/api/GroupState", {headers: headers})
+    .then((res) => {
+      return res.json()
+   })
+   .then((data) =>{
+     setMoneyEarned(data.money)
+     setWaterLevel(data.waterLevel)
+   })
+  }
+
+  function getPowerPrice() {
+    fetch("https://innafjord.azurewebsites.net/api/PowerPrice")
+      .then((res) => {
+         return res.text()
+      })
+      .then((data) =>{
+        setPowerPrice(data)
+      })
+  }
+
+  function getWaterInflux() {
+    fetch("https://innafjord.azurewebsites.net/api/WaterInflux")
+    .then((res) => {
+       return res.text()
+    })
+    .then((data) =>{
+      setWaterInflux(data)
+    })
+  }
+
+
+  useEffect(() => {
+    getPowerPrice()
+    getWaterInflux()
+    getGeneratorState()
+  }, [])
+
   return (
     <div>
       <GridContainer>
@@ -86,7 +133,7 @@ export default function Dashboard() {
               </CardIcon>
               <p className={classes.cardCategory}>Vannbestand</p>
               <h3 className={classes.cardTitle}>
-                37 <small>m</small>
+                {waterLevel} <small>m</small>
               </h3>
             </CardHeader>
             <CardFooter stats>
@@ -105,10 +152,10 @@ export default function Dashboard() {
           <Card>
             <CardHeader color="success" stats icon>
               <CardIcon color="success">
-                <Icon>savings</Icon>
+                <Icon>dollar</Icon>
               </CardIcon>
-              <p className={classes.cardCategory}>Pris</p>
-              <h3 className={classes.cardTitle}>700kr</h3>
+              <p className={classes.cardCategory}>Strømpris</p>
+              <h3 className={classes.cardTitle}>{powerPrice} kr</h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
@@ -122,10 +169,10 @@ export default function Dashboard() {
           <Card>
             <CardHeader color="danger" stats icon>
               <CardIcon color="danger">
-                <Icon>info_outline</Icon>
+                <Icon>savings</Icon>
               </CardIcon>
-              <p className={classes.cardCategory}>Fixed Issues</p>
-              <h3 className={classes.cardTitle}>75</h3>
+              <p className={classes.cardCategory}>Penger tjent</p>
+              <h3 className={classes.cardTitle}>{moneyEarned}</h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
@@ -141,8 +188,8 @@ export default function Dashboard() {
               <CardIcon color="info">
                 <i className="fab fa-twitter" />
               </CardIcon>
-              <p className={classes.cardCategory}>Followers</p>
-              <h3 className={classes.cardTitle}>+245</h3>
+              <p className={classes.cardCategory}>WaterInflux</p>
+              <h3 className={classes.cardTitle}>{waterInflux}</h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
