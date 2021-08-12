@@ -160,9 +160,9 @@ export default function Dashboard() {
                 <Danger>
                   <Warning color={dangerColor}/> {/* expected one of ["action","disabled","error","inherit","primary","secondary"] */}
                 </Danger>
-                <a href="#pablo" onClick={(e) => e.preventDefault()}>
+                <p>
                   {dangerMessage ? dangerMessage : "Vannivå OK"}
-                </a>
+                </p>
               </div>
             </CardFooter>
           </Card>

@@ -164,7 +164,7 @@ export default function Dashboard() {
     .then((data) =>{
       let waterData = Math.round(data.waterLevel)
       if (waterLevel > 40){
-        setDangerMessage("Alt for mye vann")
+        setDangerMessage("Alt for mye vann!")
         setDangerColor("error")
       }
       else if  (waterLevel > 35){
@@ -179,7 +179,7 @@ export default function Dashboard() {
         setDangerMessage("Lavt vannivå")
         setDangerColor("disabled")
       } else {
-        setDangerMessage("Alt for lite vann")
+        setDangerMessage("Alt for lite vann!")
         setDangerColor("error")
       }
 
@@ -217,8 +217,8 @@ export default function Dashboard() {
                 <Danger>
                   <Warning color = {dangerColor}/>
                 </Danger>
-                <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                  {dangerWarning}                </a>
+                <p>
+                  {dangerWarning}                </p>
 
               </div>
             </CardFooter>
