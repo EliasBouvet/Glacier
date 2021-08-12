@@ -79,20 +79,12 @@ export default function Dashboard() {
   const [waterInflux, setWaterInflux] = useState(0)
   const [moneyEarned, setMoneyEarned] = useState(0)
   const [environmentCost, setEnvironmentCost] = useState(0)
+  const [dangerMessage, setDangerMessage] = useState(null)
+  const [dangerColor, setDangerColor] = useState("disabled")
   const classes = useStyles();
   const headers = {
     "GroupId": "Gruppe 16",
     "GroupKey": "iIw0LHgoTE6K/blLE5fv3g=="
-  }
-
-  function getEnvironmentCost() {
-    fetch("https://innafjord.azurewebsites.net/api/GroupState", {headers: headers})
-    .then((res) => {
-      return res.json()
-   })
-   .then((data) =>{
-     setEnvironmentCost(data.environmentCost)
-   })
   }
 
   function getGeneratorState() {
@@ -102,7 +94,16 @@ export default function Dashboard() {
    })
    .then((data) =>{
      setMoneyEarned(data.money)
+     setEnvironmentCost(data.environmentCost)
      let waterLevelRounded = Math.round(data.waterLevel)
+     if (data.waterLevel > 40) {
+      setDangerMessage("Alt for mye vann!")
+      setDangerColor("error")
+     }
+     if (data.waterLevel < 30) {
+       setDangerMessage("Alt for lite vann!")
+       setDangerColor("error")
+     }
      setWaterLevel(waterLevelRounded)
    })
   }
@@ -133,13 +134,12 @@ export default function Dashboard() {
     getPowerPrice()
     getWaterInflux()
     getGeneratorState()
-    getEnvironmentCost()
   }, [])
 
   return (
     <div>
       <GridContainer>
-        <GridItem xs={12} sm={12} md={12} lg={12}>
+        <GridItem xs={12} sm={12} md={6} lg={6}>
           <Card>
             <CardHeader color="info" stats icon>
               <CardIcon color="info">
@@ -153,11 +153,27 @@ export default function Dashboard() {
             <CardFooter stats>
               <div className={classes.stats}>
                 <Danger>
-                  <Warning />
+                  <Warning color={dangerColor}/> {/* expected one of ["action","disabled","error","inherit","primary","secondary"] */}
                 </Danger>
                 <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                  Lite vann!
+                  {dangerMessage ? dangerMessage : "Vannivå OK"}
                 </a>
+              </div>
+            </CardFooter>
+          </Card>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={6} lg={6}>
+          <Card>
+            <CardHeader color="info" stats icon>
+              <p className={classes.cardCategory}>Værmelding for Bodø</p>
+              <h3 className={classes.cardTitle}>
+                Fint vær i dag :)
+              </h3>
+            </CardHeader>
+            <CardFooter stats>
+              <div className={classes.stats}>
+                <DateRange />
+                Værmelding skal hentes fra yr
               </div>
             </CardFooter>
           </Card>
@@ -190,8 +206,8 @@ export default function Dashboard() {
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
-                <LocalOffer />
-                Tracked from Github
+                <Update />
+                Just Updated
               </div>
             </CardFooter>
           </Card>
@@ -203,7 +219,7 @@ export default function Dashboard() {
                 <Icon>arrow_right_alt</Icon>
               </CardIcon>
               <p className={classes.cardCategory}>Vanngjennomstrømming</p>
-              <h3 className={classes.cardTitle}>{waterInflux} m3/s</h3>
+              <h3 className={classes.cardTitle}>{waterInflux} m<sup>3</sup>/s</h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
