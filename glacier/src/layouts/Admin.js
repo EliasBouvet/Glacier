@@ -162,7 +162,7 @@ export default function Dashboard(props) {
     <div className={classes.wrapper}>
       <Sidebar
         routes={routes}
-        logoText={"INNFJORD GLACIER"}
+        logoText={"INNAFJORD GLACIER"}
         logo={logo}
         image={image}
         handleDrawerToggle={handleDrawerToggle}

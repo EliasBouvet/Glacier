@@ -93,8 +93,10 @@ export default function Dashboard() {
       return res.json()
    })
    .then((data) =>{
-     setMoneyEarned(data.money)
-     setEnvironmentCost(data.environmentCost)
+     const formatMoneyEarned = new Intl.NumberFormat('no-NO', { style: 'currency', currency: 'NOK' }).format(data.money)
+     setMoneyEarned(formatMoneyEarned)
+     const formatEnvmCost = new Intl.NumberFormat('no-NO', { style: 'currency', currency: 'NOK' }).format(data.environmentCost)
+     setEnvironmentCost(formatEnvmCost)
      let waterLevelRounded = Math.round(data.waterLevel)
      if (data.waterLevel > 40) {
       setDangerMessage("Alt for mye vann!")
@@ -188,7 +190,7 @@ export default function Dashboard() {
                 <Icon>paid</Icon>
               </CardIcon>
               <p className={classes.cardCategory}>Strømpris</p>
-              <h3 className={classes.cardTitle}>{powerPrice} kr</h3>
+              <h3 className={classes.cardTitle}>{powerPrice} kr/MWh</h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
