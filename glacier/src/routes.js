@@ -3,6 +3,7 @@ import Calendar from "views/Calendar/Calendar.js";
 import Charts from "views/Charts/Charts.js";
 import Dashboard from "views/Dashboard/Dashboard.js";
 import Historie from "views/Dashboard/Historie.js";
+import Turbiner from "views/Dashboard/Turbiner.js";
 import RealTime from "views/Dashboard/RealTime.js";
 import ErrorPage from "views/Pages/ErrorPage.js";
 import ExtendedForms from "views/Forms/ExtendedForms.js";
@@ -72,7 +73,7 @@ var dashRoutes = [
     name: "Turbinstatus",
     rtlName: "لوحة القيادة",
     icon: GridOn,
-    component: Dashboard,
+    component: Turbiner,
     layout: "/admin",
   },
   {

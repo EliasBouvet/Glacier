@@ -1,164 +1,78 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
+import Slider from '@material-ui/core/Slider';
 
-// @material-ui/core components
-import { makeStyles } from "@material-ui/core/styles";
-// @material-ui/icons
-import Assignment from "@material-ui/icons/Assignment";
-import Dvr from "@material-ui/icons/Dvr";
-import Favorite from "@material-ui/icons/Favorite";
-import Close from "@material-ui/icons/Close";
-// core components
-import GridContainer from "components/Grid/GridContainer.js";
-import GridItem from "components/Grid/GridItem.js";
-import Button from "components/CustomButtons/Button.js";
-import Card from "components/Card/Card.js";
-import CardBody from "components/Card/CardBody.js";
-import CardIcon from "components/Card/CardIcon.js";
-import CardHeader from "components/Card/CardHeader.js";
-import ReactTable from "components/ReactTable/ReactTable.js";
+export default function Turbine(){
 
-import { dataTable } from "variables/general.js";
+  const [turbines,setTurbines] = useState([])
+  const [value, setValue] = useState(0);
+  const [current, setCurrent] = useState(null);
 
-import { cardTitle } from "assets/jss/material-dashboard-pro-react.js";
 
-const styles = {
-  cardIconTitle: {
-    ...cardTitle,
-    marginTop: "15px",
-    marginBottom: "0px",
-  },
-};
 
-const useStyles = makeStyles(styles);
+  var count = 0; 
+  var output = "";
+  const headers = {
+    "GroupId": "Gruppe 16",
+    "GroupKey": "iIw0LHgoTE6K/blLE5fv3g==",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": 
+    "GET, POST, PUT, DELETE, OPTIONS, UPDATE",
+    "Access-Control-Allow-Headers": "Origin, Content-Type, X-Auth-Token",
+  }
 
-export default function ReactTables() {
-  const [data, setData] = React.useState(
-    dataTable.dataRows.map((prop, key) => {
-      return {
-        id: key,
-        name: prop[0],
-        position: prop[1],
-        office: prop[2],
-        age: prop[3],
-        actions: (
-          // we've added some custom button actions
-          <div className="actions-right">
-            {/* use this button to add a like kind of action */}
-            <Button
-              justIcon
-              round
-              simple
-              onClick={() => {
-                let obj = data.find((o) => o.id === key);
-                alert(
-                  "You've clicked LIKE button on \n{ \nName: " +
-                    obj.name +
-                    ", \nposition: " +
-                    obj.position +
-                    ", \noffice: " +
-                    obj.office +
-                    ", \nage: " +
-                    obj.age +
-                    "\n}."
-                );
-              }}
-              color="info"
-              className="like"
-            >
-              <Favorite />
-            </Button>{" "}
-            {/* use this button to add a edit kind of action */}
-            <Button
-              justIcon
-              round
-              simple
-              onClick={() => {
-                let obj = data.find((o) => o.id === key);
-                alert(
-                  "You've clicked EDIT button on \n{ \nName: " +
-                    obj.name +
-                    ", \nposition: " +
-                    obj.position +
-                    ", \noffice: " +
-                    obj.office +
-                    ", \nage: " +
-                    obj.age +
-                    "\n}."
-                );
-              }}
-              color="warning"
-              className="edit"
-            >
-              <Dvr />
-            </Button>{" "}
-            {/* use this button to remove the data row */}
-            <Button
-              justIcon
-              round
-              simple
-              onClick={() => {
-                var newData = data;
-                newData.find((o, i) => {
-                  if (o.id === key) {
-                    // here you should add some custom code so you can delete the data
-                    // from this component and from your server as well
-                    newData.splice(i, 1);
-                    return true;
-                  }
-                  return false;
-                });
-                setData([...newData]);
-              }}
-              color="danger"
-              className="remove"
-            >
-              <Close />
-            </Button>{" "}
-          </div>
-        ),
-      };
+function get(){
+  fetch("https://innafjord.azurewebsites.net/api/Turbines",{headers: headers})
+    .then((res) => {
+      return res.json()
     })
-  );
-  const classes = useStyles();
-  return (
-    <GridContainer>
-      <GridItem xs={12}>
-        <Card>
-          <CardHeader color="primary" icon>
-            <CardIcon color="primary">
-              <Assignment />
-            </CardIcon>
-            <h4 className={classes.cardIconTitle}>Turbin</h4>
-          </CardHeader>
-          <CardBody>
-            <ReactTable
-              columns={[
-                {
-                  Header: "Turbi ",
-                  accessor: "name",
-                },
-                {
-                  Header: "Active",
-                  accessor: "position",
-                },
-                //{
-                //  Header: "Office",
-                 // accessor: "office",
-                //},
-                {
-                  Header: "Oppetid",
-                  accessor: "age",
-                },
-                {
-                  Header: "Actions",
-                  accessor: "actions",
-                },
-              ]}
-              data={data}
-            />
-          </CardBody>
-        </Card>
-      </GridItem>
-    </GridContainer>
-  );
+    .then((data) => {
+      console.log(data)
+      setTurbines(data)
+    })
 }
+  
+function put(id, capacity){
+  return fetch("https://innafjord.azurewebsites.net/api/Turbines/" + id + "?capacityUsage=" + capacity ,{headers: headers , method : "fetch"})
+    .then((data) => {
+      console.log(data)
+      setTurbines(data)
+    })
+}
+
+const handleChange = (newValue, turbine) => {
+    newValue = newValue/100;
+    put(turbine.id, newValue).then(()=>{get()})
+    console.log(newValue, turbine);
+
+  };
+
+  useEffect(() => {
+    get()
+  },[]);
+  output =(
+    turbines.map((turbine) => (
+      // display a <div> element with the user.name and user.type
+      // parent element needs to have a unique key
+      <div key={turbine.id}>
+        
+        <p>Turbin-Nr: {count =count+1} </p>
+        <p>Status: {(turbine.capacityUsage*100).toFixed(2)}%</p>
+        <Slider  value={turbine.capacityUsage*100}  aria-labelledby="continuous-slider" onChangeCommitted={(e, newValue) =>handleChange(newValue, turbine)}
+        
+        
+         max={100} 
+        />
+        
+      </div>
+    ),
+    ))
+
+return (
+  
+<div>
+ {output}
+
+</div>
+)
+}
+
