@@ -44,16 +44,16 @@ import WidgetsIcon from "@material-ui/icons/Widgets";
 
 var dashRoutes = [
   {
-    path: "/dashboard",
-    name: "Dashboard",
+    path: "/oversikt",
+    name: "Oversikt",
     rtlName: "لوحة القيادة",
     icon: DashboardIcon,
     component: Dashboard,
     layout: "/admin",
   },
   {
-    path: "/historie",
-    name: "Historie",
+    path: "/historiskdata",
+    name: "Historisk Data",
     rtlName: "لوحة القيادة",
     icon: DateRange,
     component: Historie,
@@ -61,28 +61,29 @@ var dashRoutes = [
   },
   {
     path: "/realtime",
-    name: "Real Time",
+    name: "Sanntidsdata",
     rtlName: "لوحة القيادة",
     icon: Apps,
     component: RealTime,
     layout: "/admin",
   },
   {
-    path: "/markedsanalyse",
-    name: "Markeds Analyse",
-    rtlName: "لوحة القيادة",
-    icon: Timeline,
-    component: Dashboard,
-    layout: "/admin",
-  },
-  {
-    path: "/turbiner",
-    name: "Turbiner",
+    path: "/turbinstatus",
+    name: "Turbinstatus",
     rtlName: "لوحة القيادة",
     icon: GridOn,
     component: Dashboard,
     layout: "/admin",
-  }/*,
+  },
+  {
+    path: "/markedsanalyse",
+    name: "MarkedsAnalyse",
+    rtlName: "لوحة القيادة",
+    icon: Timeline,
+    component: Dashboard,
+    layout: "/admin",
+  }
+/*,
   {
     collapse: true,
     name: "Pages",
