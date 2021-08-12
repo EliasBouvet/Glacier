@@ -4,6 +4,7 @@ import Charts from "views/Charts/Charts.js";
 import Dashboard from "views/Dashboard/Dashboard.js";
 import Historie from "views/Dashboard/Historie.js";
 import Turbiner from "views/Dashboard/Turbiner.js";
+import RealTime from "views/Dashboard/RealTime.js";
 import ErrorPage from "views/Pages/ErrorPage.js";
 import ExtendedForms from "views/Forms/ExtendedForms.js";
 import ExtendedTables from "views/Tables/ExtendedTables.js";
@@ -44,16 +45,16 @@ import WidgetsIcon from "@material-ui/icons/Widgets";
 
 var dashRoutes = [
   {
-    path: "/dashboard",
-    name: "Dashboard",
+    path: "/oversikt",
+    name: "Oversikt",
     rtlName: "لوحة القيادة",
     icon: DashboardIcon,
     component: Dashboard,
     layout: "/admin",
   },
   {
-    path: "/historie",
-    name: "Historie",
+    path: "/historiskdata",
+    name: "Historisk Data",
     rtlName: "لوحة القيادة",
     icon: DateRange,
     component: Historie,
@@ -61,28 +62,29 @@ var dashRoutes = [
   },
   {
     path: "/realtime",
-    name: "Real Time",
+    name: "Sanntidsdata",
     rtlName: "لوحة القيادة",
     icon: Apps,
-    component: Dashboard,
+    component: RealTime,
     layout: "/admin",
   },
   {
-    path: "/markedsanalyse",
-    name: "Markeds Analyse",
-    rtlName: "لوحة القيادة",
-    icon: Timeline,
-    component: Dashboard,
-    layout: "/admin",
-  },
-  {
-    path: "/turbiner",
-    name: "Turbiner",
+    path: "/turbinstatus",
+    name: "Turbinstatus",
     rtlName: "لوحة القيادة",
     icon: GridOn,
     component: Turbiner,
     layout: "/admin",
-  }/*,
+  },
+  {
+    path: "/markedsanalyse",
+    name: "MarkedsAnalyse",
+    rtlName: "لوحة القيادة",
+    icon: Timeline,
+    component: Dashboard,
+    layout: "/admin",
+  }
+/*,
   {
     collapse: true,
     name: "Pages",
