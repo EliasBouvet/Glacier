@@ -78,10 +78,21 @@ export default function Dashboard() {
   const [powerPrice, setPowerPrice] = useState(0)
   const [waterInflux, setWaterInflux] = useState(0)
   const [moneyEarned, setMoneyEarned] = useState(0)
+  const [environmentCost, setEnvironmentCost] = useState(0)
   const classes = useStyles();
   const headers = {
     "GroupId": "Gruppe 16",
     "GroupKey": "iIw0LHgoTE6K/blLE5fv3g=="
+  }
+
+  function getEnvironmentCost() {
+    fetch("https://innafjord.azurewebsites.net/api/GroupState", {headers: headers})
+    .then((res) => {
+      return res.json()
+   })
+   .then((data) =>{
+     setEnvironmentCost(data.environmentCost)
+   })
   }
 
   function getGeneratorState() {
@@ -91,7 +102,8 @@ export default function Dashboard() {
    })
    .then((data) =>{
      setMoneyEarned(data.money)
-     setWaterLevel(data.waterLevel)
+     let waterLevelRounded = Math.round(data.waterLevel)
+     setWaterLevel(waterLevelRounded)
    })
   }
 
@@ -111,7 +123,8 @@ export default function Dashboard() {
        return res.text()
     })
     .then((data) =>{
-      setWaterInflux(data)
+      let waterInfluxRounded = Math.round(data)
+      setWaterInflux(waterInfluxRounded)
     })
   }
 
@@ -120,12 +133,13 @@ export default function Dashboard() {
     getPowerPrice()
     getWaterInflux()
     getGeneratorState()
+    getEnvironmentCost()
   }, [])
 
   return (
     <div>
       <GridContainer>
-        <GridItem xs={12} sm={6} md={6} lg={3}>
+        <GridItem xs={12} sm={12} md={12} lg={12}>
           <Card>
             <CardHeader color="info" stats icon>
               <CardIcon color="info">
@@ -150,9 +164,9 @@ export default function Dashboard() {
         </GridItem>
         <GridItem xs={12} sm={6} md={6} lg={3}>
           <Card>
-            <CardHeader color="success" stats icon>
-              <CardIcon color="success">
-                <Icon>dollar</Icon>
+            <CardHeader color="info" stats icon>
+              <CardIcon color="info">
+                <Icon>paid</Icon>
               </CardIcon>
               <p className={classes.cardCategory}>Strømpris</p>
               <h3 className={classes.cardTitle}>{powerPrice} kr</h3>
@@ -167,12 +181,12 @@ export default function Dashboard() {
         </GridItem>
         <GridItem xs={12} sm={6} md={6} lg={3}>
           <Card>
-            <CardHeader color="danger" stats icon>
-              <CardIcon color="danger">
+            <CardHeader color="success" stats icon>
+              <CardIcon color="success">
                 <Icon>savings</Icon>
               </CardIcon>
               <p className={classes.cardCategory}>Penger tjent</p>
-              <h3 className={classes.cardTitle}>{moneyEarned}</h3>
+              <h3 className={classes.cardTitle}>{moneyEarned} kr</h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
@@ -186,10 +200,27 @@ export default function Dashboard() {
           <Card>
             <CardHeader color="info" stats icon>
               <CardIcon color="info">
-                <i className="fab fa-twitter" />
+                <Icon>arrow_right_alt</Icon>
               </CardIcon>
-              <p className={classes.cardCategory}>WaterInflux</p>
-              <h3 className={classes.cardTitle}>{waterInflux}</h3>
+              <p className={classes.cardCategory}>Vanngjennomstrømming</p>
+              <h3 className={classes.cardTitle}>{waterInflux} m3/s</h3>
+            </CardHeader>
+            <CardFooter stats>
+              <div className={classes.stats}>
+                <Update />
+                Just Updated
+              </div>
+            </CardFooter>
+          </Card>
+        </GridItem>
+        <GridItem xs={12} sm={6} md={6} lg={3}>
+          <Card>
+            <CardHeader color="info" stats icon>
+              <CardIcon color="danger">
+                <Icon>report_problem</Icon>
+              </CardIcon>
+              <p className={classes.cardCategory}>Miljøkostnad</p>
+              <h3 className={classes.cardTitle}>{environmentCost} kr</h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
