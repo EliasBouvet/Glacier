@@ -99,21 +99,17 @@ export default function Dashboard() {
 
   let Data = [
     [
-      "Generator",
+      "Turbin-Nr",
       "Status",
       "Oppetid [timer]",
       "Merknad",
     ],
-    
-    
-
   ]
+  
 
   for(let i = 1; i < 15; i++){
     Data.push([
       i.toString(),
-
-      
 
       "På",
       "220",
