@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 // react plugin for creating charts
 import ChartistGraph from "react-chartist";
 // react plugin for creating vector maps
@@ -76,6 +76,27 @@ const useStyles = makeStyles(styles);
 
 export default function Dashboard() {
   const classes = useStyles();
+
+  const headers = {
+    "GroupId": "Gruppe 16",
+    "GroupKey": "iIw0LHgoTE6K/blLE5fv3g=="
+  }
+
+  const [turbines,setTurbines] = useState([])
+  useEffect(() => {
+    fetch("https://innafjord.azurewebsites.net/api/Turbines",{headers: headers})
+    .then((res) => {
+      return res.json()
+    })
+    .then((data) => {
+      console.log(data)
+      setTurbines(data.map((value) => {
+        return [value.capacityUsage]
+      }))
+    })
+  },[])
+
+
   let Data = [
     [
       "Generator",
@@ -91,6 +112,9 @@ export default function Dashboard() {
   for(let i = 1; i < 15; i++){
     Data.push([
       i.toString(),
+
+      
+
       "På",
       "220",
       "N/A",
