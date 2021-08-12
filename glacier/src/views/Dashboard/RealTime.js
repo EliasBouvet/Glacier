@@ -78,6 +78,7 @@ export default function Dashboard() {
 
   const [waterLevel,setWaterLevel] = useState(0)
   const [price,setPrice] = useState(0)
+  const [waterInflux,setWaterInflux] = useState(0)
   const [dangerWarning, setDangerMessage] = useState(null)
   const [dangerColor, setDangerColor] = useState("disabled")
 
@@ -95,12 +96,13 @@ export default function Dashboard() {
       return res.json()
     })
     .then((data) => {
-      console.log(data)
+
       setTurbines(data.map((value) => {
         return [value.capacityUsage]
       }))
     })
   },[])
+
 
 
   let Data = [
@@ -118,23 +120,44 @@ export default function Dashboard() {
   for(let i = 0; i < turbines.length; i++){
     Data.push([
       (i+1).toString(),
-       `${turbines[i]*100}%`,
-      `${turbines[i]*19.25} kWh/s`,
+       `${(turbines[i]*100).toFixed(2)}%`,
+      `${(turbines[i]*19.25).toFixed(2)} kWh/s`,
       "N/A",
     ])
 
     statusTotal += parseFloat(turbines[i])
   }
-  console.log(statusTotal)
+
   if(turbines.length > 0){
 
     Data.push([
       "Sum",
       `${((statusTotal/turbines.length)*100).toFixed(2)}%`,
-      `${(statusTotal*19.25).toFixed(2)} kWh`,
+      `${(statusTotal*19.25).toFixed(2)} kWh/s`,
       "N/A"
     ])
   }
+
+  function getWaterInflux(){
+    fetch("https://innafjord.azurewebsites.net/api/WaterInflux", {headers: headers})
+    .then((res) => {
+      return res.json()
+    })
+    .then((data) => {
+      setWaterInflux(data.toFixed(2))
+    })
+  }
+
+  function getPrice(){
+    fetch("https://innafjord.azurewebsites.net/api/PowerPrice", {headers: headers})
+    .then((res) => {
+      return res.json()
+    })
+    .then((data) =>{
+      setPrice(data.toFixed(2))
+    })
+  }
+
 
   function getWaterLevel(){
     fetch("https://innafjord.azurewebsites.net/api/GroupState", {headers: headers})
@@ -171,6 +194,8 @@ export default function Dashboard() {
 
   useEffect(() =>{
     getWaterLevel()
+    getPrice()
+    getWaterInflux()
   })
   
 
@@ -181,7 +206,7 @@ export default function Dashboard() {
           <Card>
             <CardHeader color="warning" stats icon>
               <CardIcon color="info">
-                <Icon>content_copy</Icon>
+                <Icon>water_drop</Icon>
               </CardIcon>
               <p className={classes.cardCategory}>Vannbestand</p>
               <h3 className={classes.cardTitle}>
@@ -209,7 +234,7 @@ export default function Dashboard() {
                 <Store />
               </CardIcon>
               <p className={classes.cardCategory}>Strømpris</p>
-              <h3 className={classes.cardTitle}>700kr</h3>
+              <h3 className={classes.cardTitle}>{price} kr/MWh</h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
@@ -225,8 +250,8 @@ export default function Dashboard() {
               <CardIcon color=  "danger">
                 <Icon>info_outline</Icon>
               </CardIcon>
-              <p className={classes.cardCategory}>Fixed Issues</p>
-              <h3 className={classes.cardTitle}>75</h3>
+              <p className={classes.cardCategory}>Vanngjennomstrømning</p>
+              <h3 className={classes.cardTitle}>{waterInflux} m<sup>3</sup>/s</h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
