@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 // react plugin for creating charts
 import ChartistGraph from "react-chartist";
 // react plugin for creating vector maps
@@ -24,6 +24,7 @@ import Edit from "@material-ui/icons/Edit";
 import Place from "@material-ui/icons/Place";
 import ArtTrack from "@material-ui/icons/ArtTrack";
 import Language from "@material-ui/icons/Language";
+import AdjustIcon from '@material-ui/icons/Adjust';
 
 // core components
 import GridContainer from "components/Grid/GridContainer.js";
@@ -48,6 +49,7 @@ import styles from "assets/jss/material-dashboard-pro-react/views/dashboardStyle
 import priceImage1 from "assets/img/card-2.jpeg";
 import priceImage2 from "assets/img/card-3.jpeg";
 import priceImage3 from "assets/img/card-1.jpeg";
+import { card } from "assets/jss/material-dashboard-pro-react";
 
 const us_flag = require("assets/img/flags/US.png").default;
 const de_flag = require("assets/img/flags/DE.png").default;
@@ -73,502 +75,211 @@ var mapData = {
 const useStyles = makeStyles(styles);
 
 export default function Dashboard() {
+
+  const [waterLevel,setWaterLevel] = useState(0)
+  const [price,setPrice] = useState(0)
+  const [waterInflux,setWaterInflux] = useState(0)
+  const [dangerWarning, setDangerMessage] = useState(null)
+  const [dangerColor, setDangerColor] = useState("disabled")
+
   const classes = useStyles();
+
+  const headers = {
+    "GroupId": "Gruppe 16",
+    "GroupKey": "iIw0LHgoTE6K/blLE5fv3g=="
+  }
+
+  const [turbines,setTurbines] = useState([])
+  useEffect(() => {
+    fetch("https://innafjord.azurewebsites.net/api/Turbines",{headers: headers})
+    .then((res) => {
+      return res.json()
+    })
+    .then((data) => {
+
+      setTurbines(data.map((value) => {
+        return [value.capacityUsage]
+      }))
+    })
+  },[])
+
+
+
+  let Data = [
+    [
+      "Turbin-Nr",
+      "Status",
+      "Produksjon",
+    ],
+  ]
+  
+  let statusTotal = 0
+
+
+  for(let i = 0; i < turbines.length; i++){
+    Data.push([
+      (i+1).toString(),
+       `${(turbines[i]*100).toFixed(2)}%`,
+      `${(turbines[i]*19.25).toFixed(2)} kWh/s`,
+    ])
+
+    statusTotal += parseFloat(turbines[i])
+  }
+
+  if(turbines.length > 0){
+
+    Data.push([
+      "Total",
+      `${((statusTotal/turbines.length)*100).toFixed(2)}%`,
+      `${(statusTotal*19.25).toFixed(2)} kWh/s`,
+    ])
+  }
+
+  function getWaterInflux(){
+    fetch("https://innafjord.azurewebsites.net/api/WaterInflux", {headers: headers})
+    .then((res) => {
+      return res.json()
+    })
+    .then((data) => {
+      setWaterInflux(data.toFixed(2))
+    })
+  }
+
+  function getPrice(){
+    fetch("https://innafjord.azurewebsites.net/api/PowerPrice", {headers: headers})
+    .then((res) => {
+      return res.json()
+    })
+    .then((data) =>{
+      setPrice(data.toFixed(2))
+    })
+  }
+
+
+  function getWaterLevel(){
+    fetch("https://innafjord.azurewebsites.net/api/GroupState", {headers: headers})
+    .then((res) => {
+      return res.json()
+    })
+    .then((data) =>{
+      let waterData = Math.round(data.waterLevel)
+      if (waterLevel > 40){
+        setDangerMessage("Alt for mye vann")
+        setDangerColor("error")
+      }
+      else if  (waterLevel > 35){
+        setDangerMessage("Høyt vannivå")
+        setDangerColor("disabled")
+      }
+      else if (waterLevel > 30){
+        setDangerMessage("Alt er bra")
+        setDangerColor("disabled")
+      }
+      else if (waterLevel > 25){
+        setDangerMessage("Lavt vannivå")
+        setDangerColor("disabled")
+      } else {
+        setDangerMessage("Alt for lite vann")
+        setDangerColor("error")
+      }
+
+      setWaterLevel(waterData)
+    })
+  }
+
+
+
+  useEffect(() =>{
+    getWaterLevel()
+    getPrice()
+    getWaterInflux()
+  })
+  
+
   return (
     <div>
       <GridContainer>
-        <GridItem xs={12} sm={6} md={6} lg={3}>
+        <GridItem xs={12} sm={12} md={4}>
           <Card>
             <CardHeader color="warning" stats icon>
-              <CardIcon color="warning">
-                <Icon>content_copy</Icon>
+              <CardIcon color="info">
+                <Icon>water_drop</Icon>
               </CardIcon>
               <p className={classes.cardCategory}>Vannbestand</p>
               <h3 className={classes.cardTitle}>
-                35 <small>m</small>
+                {waterLevel} <small>m</small>
               </h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
+                
+
                 <Danger>
-                  <Warning />
+                  <Warning color = {dangerColor}/>
                 </Danger>
                 <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                  Lite vann!
-                </a>
+                  {dangerWarning}                </a>
+
               </div>
             </CardFooter>
           </Card>
         </GridItem>
-        <GridItem xs={12} sm={6} md={6} lg={3}>
+        <GridItem xs={12} sm={12} md={4}>
           <Card>
             <CardHeader color="success" stats icon>
               <CardIcon color="success">
-                <Store />
+                <Icon>paid</Icon>
               </CardIcon>
-              <p className={classes.cardCategory}>Pris</p>
-              <h3 className={classes.cardTitle}>700kr</h3>
+              <p className={classes.cardCategory}>Strømpris</p>
+              <h3 className={classes.cardTitle}>{price} kr/MWh</h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
-                <DateRange />
-                Last 24 Hours
+
               </div>
             </CardFooter>
           </Card>
         </GridItem>
-        <GridItem xs={12} sm={6} md={6} lg={3}>
+        <GridItem xs={12} sm={12} md={4}>
           <Card>
             <CardHeader color="danger" stats icon>
-              <CardIcon color="danger">
-                <Icon>info_outline</Icon>
-              </CardIcon>
-              <p className={classes.cardCategory}>Fixed Issues</p>
-              <h3 className={classes.cardTitle}>75</h3>
-            </CardHeader>
-            <CardFooter stats>
-              <div className={classes.stats}>
-                <LocalOffer />
-                Tracked from Github
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={6} md={6} lg={3}>
-          <Card>
-            <CardHeader color="info" stats icon>
               <CardIcon color="info">
-                <i className="fab fa-twitter" />
+                <Icon>arrow_right_alt</Icon>
               </CardIcon>
-              <p className={classes.cardCategory}>Followers</p>
-              <h3 className={classes.cardTitle}>+245</h3>
+              <p className={classes.cardCategory}>Vanngjennomstrømming</p>
+              <h3 className={classes.cardTitle}>{waterInflux} m<sup>3</sup>/s</h3>
             </CardHeader>
             <CardFooter stats>
               <div className={classes.stats}>
-                <Update />
-                Just Updated
+
               </div>
             </CardFooter>
           </Card>
         </GridItem>
+        
       </GridContainer>
-      <GridContainer>
-        <GridItem xs={12}>
-          <Card>
-            <CardHeader color="success" icon>
-              <CardIcon color="success">
-                <Language />
+
+    <Card>
+      <CardHeader>
+      <CardIcon color="info" icon>
+                <AdjustIcon />
               </CardIcon>
               <h4 className={classes.cardIconTitle}>
-                Global Sales by Top Locations
+                Turbinstatus
               </h4>
-            </CardHeader>
-            <CardBody>
-              <GridContainer justify="space-between">
-                <GridItem xs={12} sm={12} md={5}>
-                  <Table
-                    tableData={[
-                      [
-                        <img src={us_flag} alt="us_flag" key={"flag"} />,
-                        "USA",
-                        "2.920",
-                        "53.23%",
-                      ],
-                      [
-                        <img src={de_flag} alt="us_flag" key={"flag"} />,
-                        "Germany",
-                        "1.300",
-                        "20.43%",
-                      ],
-                      [
-                        <img src={au_flag} alt="us_flag" key={"flag"} />,
-                        "Australia",
-                        "760",
-                        "10.35%",
-                      ],
-                      [
-                        <img src={gb_flag} alt="us_flag" key={"flag"} />,
-                        "United Kingdom",
-                        "690",
-                        "7.87%",
-                      ],
-                      [
-                        <img src={ro_flag} alt="us_flag" key={"flag"} />,
-                        "Romania",
-                        "600",
-                        "5.94%",
-                      ],
-                      [
-                        <img src={br_flag} alt="us_flag" key={"flag"} />,
-                        "Brasil",
-                        "550",
-                        "4.34%",
-                      ],
-                    ]}
+      </CardHeader>
+    <CardBody>
+      <GridContainer color = "red">
+      <GridItem xs={12} sm={12} md={12}>
+        <Table
+                    tableData={Data}
                   />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={6}>
-                  <VectorMap
-                    map={"world_mill"}
-                    backgroundColor="transparent"
-                    zoomOnScroll={false}
-                    containerStyle={{
-                      width: "100%",
-                      height: "280px",
-                    }}
-                    containerClassName="map"
-                    regionStyle={{
-                      initial: {
-                        fill: "#e4e4e4",
-                        "fill-opacity": 0.9,
-                        stroke: "none",
-                        "stroke-width": 0,
-                        "stroke-opacity": 0,
-                      },
-                    }}
-                    series={{
-                      regions: [
-                        {
-                          values: mapData,
-                          scale: ["#AAAAAA", "#444444"],
-                          normalizeFunction: "polynomial",
-                        },
-                      ],
-                    }}
-                  />
-                </GridItem>
-              </GridContainer>
-            </CardBody>
-          </Card>
         </GridItem>
       </GridContainer>
-      <GridContainer>
-        <GridItem xs={12} sm={12} md={4}>
-          <Card chart className={classes.cardHover}>
-            <CardHeader color="info" className={classes.cardHeaderHover}>
-              <ChartistGraph
-                className="ct-chart-white-colors"
-                data={dailySalesChart.data}
-                type="Line"
-                options={dailySalesChart.options}
-                listener={dailySalesChart.animation}
-              />
-            </CardHeader>
-            <CardBody>
-              <div className={classes.cardHoverUnder}>
-                <Tooltip
-                  id="tooltip-top"
-                  title="Refresh"
-                  placement="bottom"
-                  classes={{ tooltip: classes.tooltip }}
-                >
-                  <Button simple color="info" justIcon>
-                    <Refresh className={classes.underChartIcons} />
-                  </Button>
-                </Tooltip>
-                <Tooltip
-                  id="tooltip-top"
-                  title="Change Date"
-                  placement="bottom"
-                  classes={{ tooltip: classes.tooltip }}
-                >
-                  <Button color="transparent" simple justIcon>
-                    <Edit className={classes.underChartIcons} />
-                  </Button>
-                </Tooltip>
-              </div>
-              <h4 className={classes.cardTitle}>Daily Sales</h4>
-              <p className={classes.cardCategory}>
-                <span className={classes.successText}>
-                  <ArrowUpward className={classes.upArrowCardCategory} /> 55%
-                </span>{" "}
-                increase in today sales.
-              </p>
-            </CardBody>
-            <CardFooter chart>
-              <div className={classes.stats}>
-                <AccessTime /> updated 4 minutes ago
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={4}>
-          <Card chart className={classes.cardHover}>
-            <CardHeader color="warning" className={classes.cardHeaderHover}>
-              <ChartistGraph
-                className="ct-chart-white-colors"
-                data={emailsSubscriptionChart.data}
-                type="Bar"
-                options={emailsSubscriptionChart.options}
-                responsiveOptions={emailsSubscriptionChart.responsiveOptions}
-                listener={emailsSubscriptionChart.animation}
-              />
-            </CardHeader>
-            <CardBody>
-              <div className={classes.cardHoverUnder}>
-                <Tooltip
-                  id="tooltip-top"
-                  title="Refresh"
-                  placement="bottom"
-                  classes={{ tooltip: classes.tooltip }}
-                >
-                  <Button simple color="info" justIcon>
-                    <Refresh className={classes.underChartIcons} />
-                  </Button>
-                </Tooltip>
-                <Tooltip
-                  id="tooltip-top"
-                  title="Change Date"
-                  placement="bottom"
-                  classes={{ tooltip: classes.tooltip }}
-                >
-                  <Button color="transparent" simple justIcon>
-                    <Edit className={classes.underChartIcons} />
-                  </Button>
-                </Tooltip>
-              </div>
-              <h4 className={classes.cardTitle}>Email Subscriptions</h4>
-              <p className={classes.cardCategory}>Last Campaign Performance</p>
-            </CardBody>
-            <CardFooter chart>
-              <div className={classes.stats}>
-                <AccessTime /> campaign sent 2 days ago
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={4}>
-          <Card chart className={classes.cardHover}>
-            <CardHeader color="danger" className={classes.cardHeaderHover}>
-              <ChartistGraph
-                className="ct-chart-white-colors"
-                data={completedTasksChart.data}
-                type="Line"
-                options={completedTasksChart.options}
-                listener={completedTasksChart.animation}
-              />
-            </CardHeader>
-            <CardBody>
-              <div className={classes.cardHoverUnder}>
-                <Tooltip
-                  id="tooltip-top"
-                  title="Refresh"
-                  placement="bottom"
-                  classes={{ tooltip: classes.tooltip }}
-                >
-                  <Button simple color="info" justIcon>
-                    <Refresh className={classes.underChartIcons} />
-                  </Button>
-                </Tooltip>
-                <Tooltip
-                  id="tooltip-top"
-                  title="Change Date"
-                  placement="bottom"
-                  classes={{ tooltip: classes.tooltip }}
-                >
-                  <Button color="transparent" simple justIcon>
-                    <Edit className={classes.underChartIcons} />
-                  </Button>
-                </Tooltip>
-              </div>
-              <h4 className={classes.cardTitle}>Completed Tasks</h4>
-              <p className={classes.cardCategory}>Last Campaign Performance</p>
-            </CardBody>
-            <CardFooter chart>
-              <div className={classes.stats}>
-                <AccessTime /> campaign sent 2 days ago
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>
-      </GridContainer>
-      <h3>Manage Listings</h3>
-      <br />
-      <GridContainer>
-        <GridItem xs={12} sm={12} md={4}>
-          <Card product className={classes.cardHover}>
-            <CardHeader image className={classes.cardHeaderHover}>
-              <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                <img src={priceImage1} alt="..." />
-              </a>
-            </CardHeader>
-            <CardBody>
-              <div className={classes.cardHoverUnder}>
-                <Tooltip
-                  id="tooltip-top"
-                  title="View"
-                  placement="bottom"
-                  classes={{ tooltip: classes.tooltip }}
-                >
-                  <Button color="transparent" simple justIcon>
-                    <ArtTrack className={classes.underChartIcons} />
-                  </Button>
-                </Tooltip>
-                <Tooltip
-                  id="tooltip-top"
-                  title="Edit"
-                  placement="bottom"
-                  classes={{ tooltip: classes.tooltip }}
-                >
-                  <Button color="success" simple justIcon>
-                    <Refresh className={classes.underChartIcons} />
-                  </Button>
-                </Tooltip>
-                <Tooltip
-                  id="tooltip-top"
-                  title="Remove"
-                  placement="bottom"
-                  classes={{ tooltip: classes.tooltip }}
-                >
-                  <Button color="danger" simple justIcon>
-                    <Edit className={classes.underChartIcons} />
-                  </Button>
-                </Tooltip>
-              </div>
-              <h4 className={classes.cardProductTitle}>
-                <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                  Cozy 5 Stars Apartment
-                </a>
-              </h4>
-              <p className={classes.cardProductDesciprion}>
-                The place is close to Barceloneta Beach and bus stop just 2 min
-                by walk and near to {'"'}Naviglio{'"'} where you can enjoy the
-                main night life in Barcelona.
-              </p>
-            </CardBody>
-            <CardFooter product>
-              <div className={classes.price}>
-                <h4>$899/night</h4>
-              </div>
-              <div className={`${classes.stats} ${classes.productStats}`}>
-                <Place /> Barcelona, Spain
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={4}>
-          <Card product className={classes.cardHover}>
-            <CardHeader image className={classes.cardHeaderHover}>
-              <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                <img src={priceImage2} alt="..." />
-              </a>
-            </CardHeader>
-            <CardBody>
-              <div className={classes.cardHoverUnder}>
-                <Tooltip
-                  id="tooltip-top"
-                  title="View"
-                  placement="bottom"
-                  classes={{ tooltip: classes.tooltip }}
-                >
-                  <Button color="transparent" simple justIcon>
-                    <ArtTrack className={classes.underChartIcons} />
-                  </Button>
-                </Tooltip>
-                <Tooltip
-                  id="tooltip-top"
-                  title="Edit"
-                  placement="bottom"
-                  classes={{ tooltip: classes.tooltip }}
-                >
-                  <Button color="success" simple justIcon>
-                    <Refresh className={classes.underChartIcons} />
-                  </Button>
-                </Tooltip>
-                <Tooltip
-                  id="tooltip-top"
-                  title="Remove"
-                  placement="bottom"
-                  classes={{ tooltip: classes.tooltip }}
-                >
-                  <Button color="danger" simple justIcon>
-                    <Edit className={classes.underChartIcons} />
-                  </Button>
-                </Tooltip>
-              </div>
-              <h4 className={classes.cardProductTitle}>
-                <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                  Office Studio
-                </a>
-              </h4>
-              <p className={classes.cardProductDesciprion}>
-                The place is close to Metro Station and bus stop just 2 min by
-                walk and near to {'"'}Naviglio{'"'} where you can enjoy the
-                night life in London, UK.
-              </p>
-            </CardBody>
-            <CardFooter product>
-              <div className={classes.price}>
-                <h4>$1.119/night</h4>
-              </div>
-              <div className={`${classes.stats} ${classes.productStats}`}>
-                <Place /> London, UK
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={4}>
-          <Card product className={classes.cardHover}>
-            <CardHeader image className={classes.cardHeaderHover}>
-              <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                <img src={priceImage3} alt="..." />
-              </a>
-            </CardHeader>
-            <CardBody>
-              <div className={classes.cardHoverUnder}>
-                <Tooltip
-                  id="tooltip-top"
-                  title="View"
-                  placement="bottom"
-                  classes={{ tooltip: classes.tooltip }}
-                >
-                  <Button color="transparent" simple justIcon>
-                    <ArtTrack className={classes.underChartIcons} />
-                  </Button>
-                </Tooltip>
-                <Tooltip
-                  id="tooltip-top"
-                  title="Edit"
-                  placement="bottom"
-                  classes={{ tooltip: classes.tooltip }}
-                >
-                  <Button color="success" simple justIcon>
-                    <Refresh className={classes.underChartIcons} />
-                  </Button>
-                </Tooltip>
-                <Tooltip
-                  id="tooltip-top"
-                  title="Remove"
-                  placement="bottom"
-                  classes={{ tooltip: classes.tooltip }}
-                >
-                  <Button color="danger" simple justIcon>
-                    <Edit className={classes.underChartIcons} />
-                  </Button>
-                </Tooltip>
-              </div>
-              <h4 className={classes.cardProductTitle}>
-                <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                  Beautiful Castle
-                </a>
-              </h4>
-              <p className={classes.cardProductDesciprion}>
-                The place is close to Metro Station and bus stop just 2 min by
-                walk and near to {'"'}Naviglio{'"'} where you can enjoy the main
-                night life in Milan.
-              </p>
-            </CardBody>
-            <CardFooter product>
-              <div className={classes.price}>
-                <h4>$459/night</h4>
-              </div>
-              <div className={`${classes.stats} ${classes.productStats}`}>
-                <Place /> Milan, Italy
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>
-      </GridContainer>
+      </CardBody>             
+      </Card>
+
+      
     </div>
   );
 }
