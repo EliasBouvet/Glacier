@@ -173,13 +173,13 @@ export default function Dashboard(props) {
         {...rest}
       />
       <div className={mainPanelClasses} ref={mainPanel}>
-        <AdminNavbar
+        {/* <AdminNavbar
           sidebarMinimize={sidebarMinimize.bind(this)}
           miniActive={miniActive}
           brandText={getActiveRoute(routes)}
           handleDrawerToggle={handleDrawerToggle}
           {...rest}
-        />
+        /> */}
         {/* On the /maps/full-screen-maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
         {getRoute() ? (
           <div className={classes.content}>
