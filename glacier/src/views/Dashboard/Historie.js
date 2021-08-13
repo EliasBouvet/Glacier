@@ -317,7 +317,7 @@ return new Date(new Date().getTime() - 12 * 60 * 60 * 1000);
                   </Button>
                 </Tooltip>
               </div>
-              <h4 className={classes.cardTitle}>Strøm pris</h4>
+              <h4 className={classes.cardTitle}>Strømpris</h4>
               <p className={classes.cardCategory}>
                 Siste 24 timer
               </p>
@@ -350,7 +350,7 @@ return new Date(new Date().getTime() - 12 * 60 * 60 * 1000);
                   </Button>
                 </Tooltip>
               </div>
-              <h4 className={classes.cardTitle}>Vann Nivå</h4>
+              <h4 className={classes.cardTitle}>Vannnivå</h4>
               <p className={classes.cardCategory}>
                 Siste 24 timer
               </p>
@@ -393,7 +393,7 @@ return new Date(new Date().getTime() - 12 * 60 * 60 * 1000);
                   </Button>
                 </Tooltip>
               </div>
-              <h4 className={classes.cardTitle}>Vann flyt</h4>
+              <h4 className={classes.cardTitle}>Vanngjennomstrømming</h4>
               <p className={classes.cardCategory}>
                 Siste 24 timer
               </p>
