@@ -399,13 +399,8 @@ export default function Dashboard() {
         </GridItem>
         <GridItem xs={12} sm={6} md={6} lg={3}>
           <Card>
-<<<<<<< HEAD
             <CardHeader color="warning" stats icon>
               <CardIcon color="warning">
-=======
-            <CardHeader color="success" stats icon>
-              <CardIcon color="success">
->>>>>>> d5e4930aec7c5a5f50f3741a9968a8ee8099e3c0
                 <Icon>paid</Icon>
               </CardIcon>
               <p className={classes.cardCategory}>Strømpris</p>
