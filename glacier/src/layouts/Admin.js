@@ -28,14 +28,14 @@ export default function Dashboard(props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [miniActive, setMiniActive] = React.useState(false);
   const [image, setImage] = React.useState(
-    require("assets/img/sidebar-2.jpg").default
+    require("assets/img/images_grey.jpg").default
   );
   const [color, setColor] = React.useState("blue");
   const [bgColor, setBgColor] = React.useState("black");
   // const [hasImage, setHasImage] = React.useState(true);
   const [fixedClasses, setFixedClasses] = React.useState("dropdown");
   const [logo, setLogo] = React.useState(
-    require("assets/img/bolt_white_24dp.svg").default
+    require("assets/img/logo.png").default
   );
   // styles
   const classes = useStyles();
@@ -162,7 +162,7 @@ export default function Dashboard(props) {
     <div className={classes.wrapper}>
       <Sidebar
         routes={routes}
-        logoText={"INNAFJORD GLACIER"}
+        logoText={"GLACIER"}
         logo={logo}
         image={image}
         handleDrawerToggle={handleDrawerToggle}

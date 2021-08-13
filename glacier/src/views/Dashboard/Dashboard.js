@@ -187,8 +187,8 @@ export default function Dashboard() {
         </GridItem>
         <GridItem xs={12} sm={6} md={6} lg={3}>
           <Card>
-            <CardHeader color="info" stats icon>
-              <CardIcon color="info">
+            <CardHeader color="success" stats icon>
+              <CardIcon color="success">
                 <Icon>paid</Icon>
               </CardIcon>
               <p className={classes.cardCategory}>Strømpris</p>
